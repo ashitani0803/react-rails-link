@@ -1,1 +1,2 @@
 export { default as LinkNew } from "./LinkNew"
+export { default as LinkEdit } from "./LinkEdit"

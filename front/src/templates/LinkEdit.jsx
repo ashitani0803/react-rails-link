@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { LinkForm } from "../components/Links"
+import { useParams } from "react-router-dom"
 import { createLink } from "../reducks/links/operations"
 import axios from "axios"
 
-const LinkNew = () => {
+const LinkEdit = () => {
     const dispatch = useDispatch()
     const selector = useSelector((state) => state.tags)
+    const [tags, setTags] = useState([])
     const [title, setTitle] = useState("")
     const [url, setUrl] = useState("")
     const [status, setStatus] = useState("")
     const [selectedTags, setSelectedTags] = useState([])
-    const [tags, setTags] = useState([])
+
+    const { id } = useParams()
 
     const defaultUrl = "http://localhost:3000"
 
@@ -28,28 +30,34 @@ const LinkNew = () => {
     })
 
     const selectTags = useCallback((tagId) => {
-        setSelectedTags([...selectedTags, tagId])
+        if (!selectedTags.includes(tagId)) {
+            setSelectedTags([...selectedTags, tagId])
+        }
     })
 
     useEffect(() => {
-        async function getTags() {
+        async function setLink() {
             await axios
-                .get(`${defaultUrl}/links`)
+                .get(`${defaultUrl}/links/${id}/edit`)
                 .then((res) => {
                     console.log(res.data)
                     setTags(res.data.tags)
+                    setTitle(res.data.link.title)
+                    setUrl(res.data.link.url)
+                    setStatus(res.data.link.status)
+                    setSelectedTags(res.data.tag_ids)
                 })
                 .catch((error) => {
                     console.log(error)
                 })
         }
-        getTags()
+        setLink()
     }, [])
 
     return (
         <React.Fragment>
             <div className='page_box'>
-                <h2 className='page_title'>新規作成ページ</h2>
+                <h2 className='page_title'>編集ページ</h2>
                 <div className='new_box'>
                     <form>
                         <div className='field_box'>
@@ -102,7 +110,9 @@ const LinkNew = () => {
                                           <input
                                               type='checkbox'
                                               value={tag.id}
-                                              checked={tag.checked}
+                                              checked={selectedTags.some(
+                                                  (id) => id === tag.id
+                                              )}
                                               onChange={() =>
                                                   selectTags(tag.id)
                                               }
@@ -128,4 +138,4 @@ const LinkNew = () => {
     )
 }
 
-export default LinkNew
+export default LinkEdit

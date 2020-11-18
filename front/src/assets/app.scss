@@ -1,0 +1,23 @@
+// 全体
+
+body {
+    background-image: image-url("/images/dmm.png");
+}
+* {
+    font-family: "M PLUS 1p", sans-serif;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    // ボタンのデフォルトを打ち消す
+    -webkit-appearance: none;
+}
+a {
+    text-decoration: none;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
+@import url("https://fonts.googleapis.com/css?family=M+PLUS+1p");
+@import "tops";
+@import "links";
+@import "tags";
+@import "lists";
