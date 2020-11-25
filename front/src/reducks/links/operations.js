@@ -14,7 +14,28 @@ export const createLink = (title, url, status, selectedTags) => {
                 },
             })
             .then((res) => {
-                dispatch(push("/links"))
+                console.log(res.data)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+}
+
+export const updateLink = (title, url, status, selectedTags, linkId) => {
+    return async (dispatch) => {
+        await axios
+            .patch(`http://localhost:3000/links/${linkId}`, {
+                id: linkId,
+                link: {
+                    title: title,
+                    url: url,
+                    status: status,
+                    tag_ids: selectedTags,
+                },
+            })
+            .then((res) => {
+                console.log(res.data)
             })
             .catch((error) => {
                 console.log(error)

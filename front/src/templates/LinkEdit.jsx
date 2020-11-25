@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { useParams } from "react-router-dom"
-import { createLink } from "../reducks/links/operations"
+import { useDispatch } from "react-redux"
+import { useParams, useHistory } from "react-router-dom"
+import { updateLink } from "../reducks/links/operations"
 import axios from "axios"
 
 const LinkEdit = () => {
     const dispatch = useDispatch()
-    const selector = useSelector((state) => state.tags)
+    const history = useHistory()
     const [tags, setTags] = useState([])
     const [title, setTitle] = useState("")
     const [url, setUrl] = useState("")
@@ -29,9 +29,14 @@ const LinkEdit = () => {
         setStatus(e.target.value)
     })
 
-    const selectTags = useCallback((tagId) => {
-        if (!selectedTags.includes(tagId)) {
-            setSelectedTags([...selectedTags, tagId])
+    const selectTags = useCallback((e) => {
+        if (selectedTags.includes(parseInt(e.target.value))) {
+            const updatedTags = selectedTags.filter(
+                (tagId) => tagId !== parseInt(e.target.value)
+            )
+            setSelectedTags(updatedTags)
+        } else {
+            setSelectedTags([...selectedTags, parseInt(e.target.value)])
         }
     })
 
@@ -105,21 +110,33 @@ const LinkEdit = () => {
                             </label>
                             {tags == undefined
                                 ? null
-                                : tags.map((tag) => (
-                                      <label key={tag.id}>
-                                          <input
-                                              type='checkbox'
-                                              value={tag.id}
-                                              checked={selectedTags.some(
-                                                  (id) => id === tag.id
-                                              )}
-                                              onChange={() =>
-                                                  selectTags(tag.id)
-                                              }
-                                          />
-                                          {tag.name}
-                                      </label>
-                                  ))}
+                                : tags.map((tag) => {
+                                      if (selectedTags.includes(tag.id)) {
+                                          return (
+                                              <label key={tag.id}>
+                                                  <input
+                                                      type='checkbox'
+                                                      value={tag.id}
+                                                      checked={true}
+                                                      onChange={selectTags}
+                                                  />
+                                                  {tag.name}
+                                              </label>
+                                          )
+                                      } else {
+                                          return (
+                                              <label key={tag.id}>
+                                                  <input
+                                                      type='checkbox'
+                                                      value={tag.id}
+                                                      checked={false}
+                                                      onChange={selectTags}
+                                                  />
+                                                  {tag.name}
+                                              </label>
+                                          )
+                                      }
+                                  })}
                         </div>
                         <input
                             type='submit'
@@ -127,7 +144,14 @@ const LinkEdit = () => {
                             value='投稿する'
                             onClick={() =>
                                 dispatch(
-                                    createLink(title, url, status, selectedTags)
+                                    updateLink(
+                                        title,
+                                        url,
+                                        status,
+                                        selectedTags,
+                                        id
+                                    ),
+                                    history.push("/links")
                                 )
                             }
                         />

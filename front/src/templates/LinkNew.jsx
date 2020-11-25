@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { LinkForm } from "../components/Links"
+import { useHistory } from "react-router-dom"
+import { useDispatch } from "react-redux"
 import { createLink } from "../reducks/links/operations"
 import axios from "axios"
 
 const LinkNew = () => {
     const dispatch = useDispatch()
-    const selector = useSelector((state) => state.tags)
+    const history = useHistory()
     const [title, setTitle] = useState("")
     const [url, setUrl] = useState("")
     const [status, setStatus] = useState("")
@@ -27,8 +27,15 @@ const LinkNew = () => {
         setStatus(e.target.value)
     })
 
-    const selectTags = useCallback((tagId) => {
-        setSelectedTags([...selectedTags, tagId])
+    const selectTags = useCallback((e) => {
+        if (selectedTags.includes(e.target.value)) {
+            const updatedTags = selectedTags.filter(
+                (tagId) => tagId !== e.target.value
+            )
+            setSelectedTags(updatedTags)
+        } else {
+            setSelectedTags([...selectedTags, e.target.value])
+        }
     })
 
     useEffect(() => {
@@ -103,9 +110,7 @@ const LinkNew = () => {
                                               type='checkbox'
                                               value={tag.id}
                                               checked={tag.checked}
-                                              onChange={() =>
-                                                  selectTags(tag.id)
-                                              }
+                                              onChange={selectTags}
                                           />
                                           {tag.name}
                                       </label>
@@ -117,7 +122,13 @@ const LinkNew = () => {
                             value='投稿する'
                             onClick={() =>
                                 dispatch(
-                                    createLink(title, url, status, selectedTags)
+                                    createLink(
+                                        title,
+                                        url,
+                                        status,
+                                        selectedTags
+                                    ),
+                                    history.push("/links")
                                 )
                             }
                         />

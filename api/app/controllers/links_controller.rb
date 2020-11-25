@@ -43,7 +43,34 @@ class LinksController < ApplicationController
     end
 
     def update
-
+        @link = Link.find(params[:id])
+        if @link.update(link_params)
+            # tag_linksのtag_idは 1, 2, 3と仮定
+            # tag_idsは 3, 4, 5と仮定
+            tag_links = @link.tag_links # ["1", "2", "3"]
+            # tag_linkを作成(新規でパラメータが送られてきたら)
+            @link.tag_ids.each do |t| # ["3", "4", "5"]
+                if !tag_links.find_by(link_id: @link.id, tag_id: t.to_i) # tが4, 5の時true
+                    tag_link = TagLink.new(link_id: @link.id, tag_id: t.to_i)
+                    tag_link.save
+                    @link.tag_ids.delete("#{t}")      
+                end
+            end
+            # tag_linkを削除(既存のパラメータが送られてこなかったら)
+            array = tag_links.pluck(:tag_id) - @link.tag_ids # ["1", "2"]
+            array.each do |tl|
+                TagLink.find_by(link_id: @link.id, tag_id: tl.to_i).destroy # tlが1, 2の時削除
+            end
+            if @link.status == "S2_ONLY"
+                render json: {link: @link, status: @link.status}
+                # redirect_to blue_index_links_path
+            else
+                render json: {link: @link, status: @link.status}
+                # redirect_to links_path
+            end
+        else
+            render json: {erros: @link.errors.messages}
+        end
     end
 
     def destroy
