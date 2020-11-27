@@ -1,7 +1,11 @@
-// export const CREATE_LINK = "CREATE_LINK"
-// export const createLinkAction = (link) => {
-//     return {
-//         type: "CREATE_LINK",
-//         payload: link,
-//     }
-// }
+export const CHANGE_TAB = "CHANGE_TAB"
+export const changeTabAction = (tab) => {
+    return {
+        type: "CHANGE_TAB",
+        payload: {
+            tabClass: tab.tabInfo.tabClass,
+            tabName: tab.tabInfo.tabName,
+            tabIndex: tab.tabInfo.tabIndex,
+        },
+    }
+}

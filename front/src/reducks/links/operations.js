@@ -1,6 +1,7 @@
 import { push } from "connected-react-router"
 // import { createLinkAction } from "./actions"
 import axios from "axios"
+import { changeTabAction } from "./actions"
 
 export const createLink = (title, url, status, selectedTags) => {
     return async (dispatch) => {
@@ -40,5 +41,15 @@ export const updateLink = (title, url, status, selectedTags, linkId) => {
             .catch((error) => {
                 console.log(error)
             })
+    }
+}
+
+export const changeTab = (tabClass, tabName, tabIndex) => {
+    const tabInfo = {
+        tabInfo: { tabClass: tabClass, tabName: tabName, tabIndex: tabIndex },
+    }
+
+    return async (dispatch) => {
+        dispatch(changeTabAction(tabInfo))
     }
 }

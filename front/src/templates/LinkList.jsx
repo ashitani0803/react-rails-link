@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { getTabInfo } from "../reducks/links/selectors"
 import { Link } from "react-router-dom"
 import axios from "axios"
+import { changeTab } from "../reducks/links/operations"
 import BookmarkImage from "../assets/images/bookmark.png"
 import CreateImage from "../assets/images/create.png"
 
 const LinkList = () => {
+    const dispatch = useDispatch()
+    const selector = useSelector((state) => state)
+    const tabInfo = getTabInfo(selector)
+
     const [searchWord, setSearchWord] = useState("")
-    const [selectedTabClass, setSelectedTabClass] = useState("content1")
-    const [selectedTab, setSelectedTab] = useState("s1")
     const [tags, setTags] = useState([])
     const [links, setLinks] = useState([{ s1: [] }, { s2: [] }, { ojt: [] }])
 
@@ -17,12 +22,11 @@ const LinkList = () => {
         setSearchWord(e.target.value)
     })
 
-    const changeTab = useCallback((tabStatus, tabContent) => {
+    const changeTabInfo = useCallback((tabClass, tabName, tabIndex) => {
         const lamp = document.getElementById("lamp")
-        lamp.classList.remove(selectedTabClass)
-        lamp.classList.add(tabStatus)
-        setSelectedTabClass(tabStatus)
-        setSelectedTab(tabContent)
+        lamp.classList.remove(tabInfo.tabClass)
+        lamp.classList.add(tabClass)
+        dispatch(changeTab(tabClass, tabName, tabIndex))
     })
 
     useEffect(() => {
@@ -55,7 +59,7 @@ const LinkList = () => {
         )
     })
 
-    const tabContent = links[0][selectedTab].map((link) => {
+    const tabContent = links[tabInfo.tabIndex][tabInfo.tabName].map((link) => {
         return (
             <div className='link-box' key={link.id}>
                 <p className='icon_button'>
@@ -142,26 +146,32 @@ const LinkList = () => {
                         <div className='tab-buttons'>
                             <span
                                 className='content1'
-                                onClick={() => changeTab("content1", "s1")}
+                                onClick={() =>
+                                    changeTabInfo("content1", "s1", 0)
+                                }
                             >
                                 S1
                             </span>
                             <span
                                 className='content2'
-                                onClick={() => changeTab("content2", "s2")}
+                                onClick={() =>
+                                    changeTabInfo("content2", "s2", 1)
+                                }
                             >
                                 S2
                             </span>
                             <span
                                 className='content3'
-                                onClick={() => changeTab("content3", "ojt")}
+                                onClick={() =>
+                                    changeTabInfo("content3", "ojt", 2)
+                                }
                             >
                                 OJT
                             </span>
-                            <div id='lamp' className='content1'></div>
+                            <div id='lamp' className={tabInfo.tabClass}></div>
                         </div>
                         <div className='tab-content'>
-                            <div className={selectedTabClass}>{tabContent}</div>
+                            <div className={tabInfo.tabClass}>{tabContent}</div>
                         </div>
                     </div>
                 </div>
