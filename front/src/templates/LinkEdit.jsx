@@ -141,7 +141,7 @@ const LinkEdit = () => {
                         <input
                             type='submit'
                             className='link_create_button'
-                            value='投稿する'
+                            value='更新する'
                             onClick={() =>
                                 dispatch(
                                     updateLink(

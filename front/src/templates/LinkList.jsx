@@ -6,6 +6,9 @@ import axios from "axios"
 import { changeTab } from "../reducks/links/operations"
 import BookmarkImage from "../assets/images/bookmark.png"
 import CreateImage from "../assets/images/create.png"
+import s1Image from "../assets/images/s.png"
+import s2Image from "../assets/images/s2.png"
+import ojtImage from "../assets/images/ojt.png"
 
 const LinkList = () => {
     const dispatch = useDispatch()
@@ -27,6 +30,22 @@ const LinkList = () => {
         lamp.classList.remove(tabInfo.tabClass)
         lamp.classList.add(tabClass)
         dispatch(changeTab(tabClass, tabName, tabIndex))
+    })
+
+    const tagSearch = useCallback((tagId) => {
+        async function getLinks() {
+            await await axios
+                .get(`${defaultUrl}/links`, { id: tagId })
+                .then((res) => {
+                    console.log("ddd")
+                    console.log(res.data)
+                    setLinks(res.data.links)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
+        getLinks()
     })
 
     useEffect(() => {
@@ -52,7 +71,11 @@ const LinkList = () => {
     const tagList = tags.map((tag) => {
         return (
             <td className='tag-name' key={tag.id}>
-                <a href='' className='tag-text_name'>
+                <a
+                    href=''
+                    className='tag-text_name'
+                    onClick={() => tagSearch(tag.id)}
+                >
                     {tag.name}
                 </a>
             </td>
@@ -67,11 +90,34 @@ const LinkList = () => {
                         <i className='fa fa-edit'></i>
                     </Link>
                     <span className='not_favorited'>
-                        <i className='fa fa-bokmark-o book-mark-icon'></i>
+                        <i className='fa fa-bookmark book-mark-icon'></i>
                     </span>
                 </p>
                 <a href={link.url}>
-                    <img src='/assets/images/s.png' className='link-img' />
+                    {tabInfo.tabName === "s1" && (
+                        <img
+                            src={s1Image}
+                            className='link-img'
+                            width='40'
+                            height='40'
+                        />
+                    )}
+                    {tabInfo.tabName === "s2" && (
+                        <img
+                            src={s2Image}
+                            className='link-img'
+                            width='40'
+                            height='40'
+                        />
+                    )}
+                    {tabInfo.tabName === "ojt" && (
+                        <img
+                            src={ojtImage}
+                            className='link-img'
+                            width='40'
+                            height='40'
+                        />
+                    )}
                     <p className='link-title'>{link.title}</p>
                 </a>
             </div>
@@ -95,9 +141,9 @@ const LinkList = () => {
                     <Link to='/links/list'>
                         <img
                             className='book-icon'
-                            src='/assets/images/bookmark.png'
+                            src={BookmarkImage}
                             width='40'
-                            width='35'
+                            height='35'
                         />
                         <p className='book-icon-list'>ブックリスト</p>
                     </Link>
@@ -106,7 +152,7 @@ const LinkList = () => {
                             <li className='toggle'>
                                 <a href='javascript:void(0)'>
                                     <img
-                                        src='/assets/images/create.png'
+                                        src={CreateImage}
                                         width='35'
                                         height='25'
                                     />
