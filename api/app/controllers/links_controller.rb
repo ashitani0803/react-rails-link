@@ -1,6 +1,7 @@
 class LinksController < ApplicationController
     def index
-        @tags = Tag.all
+        @tags = Tag.all.order(id: "ASC")
+        p @tags
         if params[:id]
             @ojt_links = Tag.find(params[:id]).links.where(status: 'OJT')
             @s1_links = Tag.find(params[:id]).links.where(status: 'S1')

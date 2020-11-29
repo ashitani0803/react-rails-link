@@ -1,18 +1,28 @@
 import React, { useState, useCallback, useEffect } from "react"
+import { useDispatch } from "react-redux"
+import { useHistory } from "react-router-dom"
 import axios from "axios"
 import { Link } from "react-router-dom"
+import { createTag, updateTag, destroyTag } from "../reducks/tags/operations"
 
 export const TagNew = () => {
+    const dispatch = useDispatch()
+    const history = useHistory()
     const [tagName, setTagName] = useState("")
     const [tags, setTags] = useState([])
+    const [editTagName, setEditTagName] = useState("")
 
     const defaultUrl = "http://localhost:3000"
 
     const inputTagName = useCallback((e) => {
-        setTagName(e.target.target)
+        setTagName(e.target.value)
     })
 
-    const toggleInput = useCallback((tagId) => {
+    const inputEditTagName = useCallback((e) => {
+        setEditTagName(e.target.value)
+    })
+
+    const toggleInput = useCallback((tagId, tagName) => {
         const editElements = document.getElementsByClassName(`edit_${tagId}`)
         const updateElements = document.getElementsByClassName(
             `update_${tagId}`
@@ -22,6 +32,7 @@ export const TagNew = () => {
                 editElements[i].style.display = "none"
                 updateElements[i].style.display = "inline-block"
             } else {
+                setEditTagName(tagName)
                 editElements[i].style.display = "inline-block"
                 updateElements[i].style.display = "none"
             }
@@ -53,24 +64,40 @@ export const TagNew = () => {
                         <input
                             className={`name_field edit_${tag.id}`}
                             type='text'
-                            value={tag.name}
+                            value={editTagName}
+                            onChange={inputEditTagName}
                         />
                     </div>
                     <div className='right_button'>
                         <button
                             className={`update_${tag.id}`}
                             type='button'
-                            onClick={() => toggleInput(tag.id)}
+                            onClick={() => toggleInput(tag.id, tag.name)}
                         >
                             編集
                         </button>
-                        <a href='' className={`tag_delete update_${tag.id}`}>
+                        <a
+                            href=''
+                            className={`tag_delete update_${tag.id}`}
+                            onClick={() =>
+                                dispatch(
+                                    destroyTag(tag.id),
+                                    history.push("/tags/new")
+                                )
+                            }
+                        >
                             削除
                         </a>
                         <input
                             type='submit'
                             value='更新'
                             className={`edit_${tag.id}`}
+                            onClick={() =>
+                                dispatch(
+                                    updateTag(editTagName, tag.id),
+                                    history.push("/tags/new")
+                                )
+                            }
                         />
                         <span
                             type='button'
@@ -95,11 +122,18 @@ export const TagNew = () => {
                             className='field_text'
                             type='text'
                             value={tagName}
+                            onChange={inputTagName}
                         />
                         <input
                             type='submit'
                             value='作成'
                             className='create_button'
+                            onClick={() =>
+                                dispatch(
+                                    createTag(tagName),
+                                    history.push("/tags/new")
+                                )
+                            }
                         />
                     </form>
                 </div>
